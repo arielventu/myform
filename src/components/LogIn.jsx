@@ -7,6 +7,7 @@ const LogIn = () => {
     password: ''
   })
   const [users, setUsers] = useState([])
+  const [clear, setClear] = useState(false)
 
   useEffect(() => {
     fetch('https://dummyjson.com/users')
@@ -21,21 +22,19 @@ const LogIn = () => {
     const { email, password } = user
     const existEmail = users.find(user => user.email === email)
     const existPassword = users.find(user => user.password === password)
-    if (existEmail && existPassword) {
+    if (email.length === 0 || password.length === 0) toast.error('All fields are required')
+    else if (existEmail && existPassword) {
       toast.success(`Welcome ${existEmail.firstName} ${existEmail.lastName}`)
-    } else {
-      toast.error('Invalid email or password')
-    }
+      setClear(true)
+    } else toast.error('Invalid email or password')
   }
 
   const handleSubmit = (e) => {
     e.preventDefault()
     validateLogin()
-    setUser({
-      email: '',
-      password: ''
-    })
+    clear === true && e.target.reset()
   }
+
   const handleChange = (e) => {
     setUser({
       ...user,
@@ -44,7 +43,7 @@ const LogIn = () => {
   }
 
   return (
-    <form>
+    <form onSubmit={handleSubmit}>
       <div className='space-y-12'>
         <div className='border-b border-gray-900/10 pb-12'>
           <div className='mt-10 grid grid-cols-1 gap-y-8 gap-x-6 sm:grid-cols-6'>
@@ -65,7 +64,7 @@ const LogIn = () => {
       </div>
       <div className='mt-6 flex items-center justify-end gap-x-6'>
         <button type='button' className='text-sm font-semibold leading-6 text-white'>Cancel</button>
-        <button onClick={handleSubmit} className='rounded-md bg-indigo-600 py-2 px-3 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600'>Save</button>
+        <button type='submit' className='rounded-md bg-indigo-600 py-2 px-3 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600'>Save</button>
       </div>
     </form>
   )
